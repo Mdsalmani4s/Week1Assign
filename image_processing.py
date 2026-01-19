@@ -40,3 +40,20 @@ plt.imshow(cv2.cvtColor(scaled_image, cv2.COLOR_BGR2RGB))
 plt.title("Scaled Image (1.5x)")
 plt.axis("off")
 plt.show()
+
+
+# Define focal length variations
+focal_lengths = [50, 100, 200]
+
+# Display different focal lengths
+plt.figure(figsize=(12, 4))
+for i, f in enumerate(focal_lengths):
+    f_matrix = np.array([[f, 0, w//2], [0, f, h//2], [0, 0, 1]])  # Camera intrinsic matrix
+    warped_image = cv2.warpPerspective(image, f_matrix, (w, h))
+
+    plt.subplot(1, 3, i+1)
+    plt.imshow(cv2.cvtColor(warped_image, cv2.COLOR_BGR2RGB))
+    plt.title(f"Focal Length: {f}")
+    plt.axis("off")
+
+plt.show()
