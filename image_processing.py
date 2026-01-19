@@ -13,6 +13,8 @@ plt.axis("off")
 plt.show()
 
 
+
+# ===== ROTATION =====
 # Define rotation parameters
 (h, w) = image.shape[:2]  # Get image height and width
 center = (w // 2, h // 2)  # Find the center of the image
@@ -31,46 +33,54 @@ plt.title("Rotated Image (45°)")
 plt.axis("off")
 plt.show()
 
-
+# ===== SCALING (FIXED) =====
 # Scale the image by 1.5x
-scaled_image = cv2.resize(image, None, fx=1.5, fy=1.5, interpolation=cv2.INTER_LINEAR)
+scale_factor = 1.5
+new_width = int(w * scale_factor)
+new_height = int(h * scale_factor)
+scaled_image = cv2.resize(image, (new_width, new_height), interpolation=cv2.INTER_LINEAR)
 
-# Display the scaled image
+# Display the scaled image (showing it's actually bigger)
+plt.figure(figsize=(10, 8))
 plt.imshow(cv2.cvtColor(scaled_image, cv2.COLOR_BGR2RGB))
-plt.title("Scaled Image (1.5x)")
+plt.title(f"Scaled Image (1.5x) - New size: {new_width}x{new_height}")
 plt.axis("off")
 plt.show()
 
-
-# Define focal length variations
+# ===== 3D VISION - FOCAL LENGTH SIMULATION (FIXED) =====
+# Simulate different focal lengths (camera zoom effects)
 focal_lengths = [50, 100, 200]
 
-# Display different focal lengths
-plt.figure(figsize=(12, 4))
-for i, f in enumerate(focal_lengths):
-    zoom_factor = f / 100.0  # Normalize focal length to create zoom effect
+plt.figure(figsize=(15, 5))
+for i, focal_length in enumerate(focal_lengths):
+    # Calculate crop factor based on focal length
+    # Lower focal length = wider view (zoom out)
+    # Higher focal length = narrower view (zoom in)
+    crop_factor = 100 / focal_length
     
-    # Create transformation matrix for perspective warp
-    src_points = np.float32([[0, 0], [w, 0], [w, h], [0, h]])
+    # Calculate crop dimensions
+    crop_w = int(w * crop_factor)
+    crop_h = int(h * crop_factor)
     
-    # Calculate destination points based on zoom factor
-    offset_w = w * (1 - zoom_factor) / 2
-    offset_h = h * (1 - zoom_factor) / 2
+    # Calculate crop coordinates (center crop)
+    x_start = (w - crop_w) // 2
+    y_start = (h - crop_h) // 2
     
-    dst_points = np.float32([
-        [offset_w, offset_h],
-        [w - offset_w, offset_h],
-        [w - offset_w, h - offset_h],
-        [offset_w, h - offset_h]
-    ])
+    # Crop the image
+    cropped = image[y_start:y_start+crop_h, x_start:x_start+crop_w]
     
-    # Get perspective transformation matrix
-    perspective_matrix = cv2.getPerspectiveTransform(src_points, dst_points)
-    warped_image = cv2.warpPerspective(image, perspective_matrix, (w, h))
-
+    # Resize back to original dimensions for display
+    focal_image = cv2.resize(cropped, (w, h), interpolation=cv2.INTER_LINEAR)
+    
+    # Display
     plt.subplot(1, 3, i+1)
-    plt.imshow(cv2.cvtColor(warped_image, cv2.COLOR_BGR2RGB))
-    plt.title(f"Focal Length: {f}")
+    plt.imshow(cv2.cvtColor(focal_image, cv2.COLOR_BGR2RGB))
+    plt.title(f"Focal Length: {focal_length}mm")
     plt.axis("off")
 
+plt.tight_layout()
 plt.show()
+
+print("\n✅ All transformations completed successfully!")
+print(f"Original image size: {w}x{h}")
+print(f"Scaled image size: {new_width}x{new_height}")
