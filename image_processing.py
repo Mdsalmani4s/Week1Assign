@@ -30,3 +30,13 @@ plt.imshow(cv2.cvtColor(rotated_image, cv2.COLOR_BGR2RGB))
 plt.title("Rotated Image (45°)")
 plt.axis("off")
 plt.show()
+
+
+# Scale the image by 1.5x
+scaled_image = cv2.resize(image, None, fx=1.5, fy=1.5, interpolation=cv2.INTER_LINEAR)
+
+# Display the scaled image
+plt.imshow(cv2.cvtColor(scaled_image, cv2.COLOR_BGR2RGB))
+plt.title("Scaled Image (1.5x)")
+plt.axis("off")
+plt.show()
