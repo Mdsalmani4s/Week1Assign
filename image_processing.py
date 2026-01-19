@@ -11,3 +11,22 @@ plt.imshow(image_rgb)
 plt.title("Original Image")
 plt.axis("off")
 plt.show()
+
+
+# Define rotation parameters
+(h, w) = image.shape[:2]  # Get image height and width
+center = (w // 2, h // 2)  # Find the center of the image
+angle = 45  # Rotate by 45 degrees
+scale = 1.0  # Keep the scale the same
+
+# Create the rotation matrix
+rotation_matrix = cv2.getRotationMatrix2D(center, angle, scale)
+
+# Apply the rotation
+rotated_image = cv2.warpAffine(image, rotation_matrix, (w, h))
+
+# Display the rotated image
+plt.imshow(cv2.cvtColor(rotated_image, cv2.COLOR_BGR2RGB))
+plt.title("Rotated Image (45°)")
+plt.axis("off")
+plt.show()
