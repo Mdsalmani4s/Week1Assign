@@ -48,8 +48,25 @@ focal_lengths = [50, 100, 200]
 # Display different focal lengths
 plt.figure(figsize=(12, 4))
 for i, f in enumerate(focal_lengths):
-    f_matrix = np.array([[f, 0, w//2], [0, f, h//2], [0, 0, 1]])  # Camera intrinsic matrix
-    warped_image = cv2.warpPerspective(image, f_matrix, (w, h))
+    zoom_factor = f / 100.0  # Normalize focal length to create zoom effect
+    
+    # Create transformation matrix for perspective warp
+    src_points = np.float32([[0, 0], [w, 0], [w, h], [0, h]])
+    
+    # Calculate destination points based on zoom factor
+    offset_w = w * (1 - zoom_factor) / 2
+    offset_h = h * (1 - zoom_factor) / 2
+    
+    dst_points = np.float32([
+        [offset_w, offset_h],
+        [w - offset_w, offset_h],
+        [w - offset_w, h - offset_h],
+        [offset_w, h - offset_h]
+    ])
+    
+    # Get perspective transformation matrix
+    perspective_matrix = cv2.getPerspectiveTransform(src_points, dst_points)
+    warped_image = cv2.warpPerspective(image, perspective_matrix, (w, h))
 
     plt.subplot(1, 3, i+1)
     plt.imshow(cv2.cvtColor(warped_image, cv2.COLOR_BGR2RGB))
